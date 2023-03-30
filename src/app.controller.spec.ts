@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { PolicyService } from './policy/policy.service';
-import {Policy} from "../types";
+import { Policy } from '../types';
 
 describe('AppController', () => {
   let appController: AppController;
