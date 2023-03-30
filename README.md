@@ -48,3 +48,7 @@ One small addition is that if **zero** policies are returned by the namespace ga
 a default permission of `["*"]` will be returned. This effectively makes is so that if
 the database is empty it will give the appropriate permissions to setup the initial RBAC
 rule sets.
+
+Depending on the complexity of the namespaces and/or policies, I would suggest caching
+them with a key format of `perm-{subject}-{namespace}`. Since dashes cannot be used in
+a namespace it's relatively safe from collision.
