@@ -1,7 +1,7 @@
 permission: '*'
 rules:
     - op: contains
-      src: $.user.groups
+      src: $.global_roles
       value: admin
 ---
 permission: basic
