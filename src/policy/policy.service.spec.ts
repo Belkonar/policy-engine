@@ -43,6 +43,36 @@ describe('PolicyService', () => {
     expect(response).toBe(body);
   });
 
+  it('should get all', async () => {
+    const orgs: FindCursor<WithId<PolicyDocument>> = {
+      toArray: async () => {
+        return [
+          {
+            key: 'org-admins',
+            policies: [
+              {
+                permission: 'org.*',
+                rules: [{ op: 'true' }],
+              },
+            ],
+          },
+        ];
+      },
+    } as FindCursor<WithId<PolicyDocument>>;
+
+    collection.find = jest.fn(
+      async ({ namespace }: { namespace: string }) => orgs,
+    ) as any;
+
+    await service.getAll();
+  });
+
+  it('should get one', async () => {
+    collection.findOne = jest.fn(async () => {}) as any;
+
+    await service.getOne('key');
+  });
+
   it('should update document with YAML', async () => {
     const yaml = `
 permission: '*'

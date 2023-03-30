@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Policy, PolicyDocument, PolicyEngineRequest } from '../types';
 
 import { PolicyService } from './policy/policy.service';
@@ -15,6 +15,16 @@ export class AppController {
     return {
       status: 'ok',
     };
+  }
+
+  @Get()
+  async getAll(): Promise<PolicyDocument[]> {
+    return await this.policyService.getAll();
+  }
+
+  @Get(':key')
+  async getOne(@Param('key') key: string): Promise<PolicyDocument> {
+    return await this.policyService.getOne(key);
   }
 
   @Put('document')

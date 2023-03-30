@@ -23,6 +23,22 @@ describe('AppController', () => {
     expect(response.status).toBe('ok');
   });
 
+  it('get all', async () => {
+    policyService.getAll = jest.fn(async () => []);
+
+    await appController.getAll();
+
+    expect(policyService.getAll).toHaveBeenCalled();
+  });
+
+  it('get one', async () => {
+    policyService.getOne = jest.fn(async () => ({})) as any;
+
+    await appController.getOne('key');
+
+    expect(policyService.getOne).toHaveBeenCalledWith('key');
+  });
+
   it('should update document', async () => {
     policyService.updateDocument = jest.fn(async (x) => x);
 

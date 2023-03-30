@@ -88,6 +88,28 @@ export class PolicyService {
     return permissions;
   }
 
+  async getAll(): Promise<PolicyDocument[]> {
+    const collection = this.dataService.policies();
+
+    const response = await collection.find(
+      {},
+      {
+        sort: { ordinal: 1 },
+        projection: { policies: 0, yaml: 0 },
+      },
+    );
+
+    return response.toArray();
+  }
+
+  async getOne(key: string): Promise<PolicyDocument> {
+    const collection = this.dataService.policies();
+
+    return await collection.findOne({
+      key,
+    });
+  }
+
   executeRule(input: unknown, rule: RuleKind): boolean {
     if (isOp(rule)) {
       if (rule.op === 'true') {
