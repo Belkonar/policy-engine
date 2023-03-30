@@ -7,6 +7,16 @@ import { PolicyService } from './policy/policy.service';
 export class AppController {
   constructor(private readonly policyService: PolicyService) {}
 
+  /**
+   * This method is strictly for load balancers.
+   */
+  @Get('health')
+  health(): any {
+    return {
+      status: 'ok',
+    };
+  }
+
   @Put('document')
   async updateDocument(@Body() body: PolicyDocument): Promise<PolicyDocument> {
     const document: PolicyDocument = {

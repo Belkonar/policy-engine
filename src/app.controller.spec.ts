@@ -19,6 +19,8 @@ describe('AppController', () => {
 
   it('should be defined', () => {
     expect(appController).toBeDefined();
+    const response = appController.health();
+    expect(response.status).toBe('ok');
   });
 
   it('should update document', async () => {
