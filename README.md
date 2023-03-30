@@ -52,3 +52,13 @@ rule sets.
 Depending on the complexity of the namespaces and/or policies, I would suggest caching
 them with a key format of `perm-{subject}-{namespace}`. Since dashes cannot be used in
 a namespace it's relatively safe from collision.
+
+## Database
+
+We are using mongo for document storage. While it's probably not needed to add indexes to the
+singular collection, if it's large or hit a ton you can feel free to add these.
+
+```
+{ namespace: 1 }
+{ ordinal: 1 }
+```
