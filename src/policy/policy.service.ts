@@ -3,6 +3,7 @@ import { DataService } from '../data/data.service';
 import {
   Policy,
   PolicyDocument,
+  PolicyFrom,
   RuleAnd,
   RuleKind,
   RuleOp,
@@ -33,8 +34,8 @@ export class PolicyService {
     return body;
   }
 
-  async getPoliciesByNamespace(ns: string): Promise<Policy[]> {
-    let policies: Policy[] = [];
+  async getPoliciesByNamespace(ns: string): Promise<PolicyFrom[]> {
+    let policies: PolicyFrom[] = [];
 
     const nsParts = ns.split('.');
 
@@ -46,7 +47,12 @@ export class PolicyService {
         sort: { ordinal: 1 },
       });
 
-      const items = (await response.toArray()).flatMap((x) => x.policies);
+      const items = (await response.toArray()).flatMap((x) =>
+        x.policies.map((p) => ({
+          ...p,
+          from: x.key,
+        })),
+      );
 
       policies = [...policies, ...items];
     }

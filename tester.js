@@ -10,7 +10,7 @@ const doc = fs.readFileSync('./example-doc.yaml', {
 });
 
 const body = {
-  key: 'global-lol',
+  key: 'global-admins',
   yaml: doc,
 };
 

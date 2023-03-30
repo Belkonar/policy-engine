@@ -21,6 +21,10 @@ export interface Policy {
   rules: RuleKind[];
 }
 
+export interface PolicyFrom extends Policy {
+  from: string;
+}
+
 export interface RuleOp {
   op: 'contains' | 'eq' | 'true';
   src: string;
