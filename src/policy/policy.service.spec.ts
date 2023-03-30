@@ -60,9 +60,7 @@ describe('PolicyService', () => {
       },
     } as FindCursor<WithId<PolicyDocument>>;
 
-    collection.find = jest.fn(
-      async ({ namespace }: { namespace: string }) => orgs,
-    ) as any;
+    collection.find = jest.fn(async () => orgs) as any;
 
     await service.getAll();
   });
