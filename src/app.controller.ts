@@ -1,15 +1,11 @@
 import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
-import { AppService } from './app.service';
 import { Policy, PolicyDocument, PolicyEngineRequest } from '../types';
 
 import { PolicyService } from './policy/policy.service';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly policyService: PolicyService,
-  ) {}
+  constructor(private readonly policyService: PolicyService) {}
 
   @Put('document')
   async updateDocument(@Body() body: PolicyDocument): Promise<PolicyDocument> {

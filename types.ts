@@ -9,8 +9,8 @@ export interface PolicyEngineRequest {
 
 export interface PolicyDocument {
   key: string;
-  namespace: string;
-  ordinal: number;
+  namespace?: string;
+  ordinal?: number;
   policies: Policy[];
   yaml?: string;
 }

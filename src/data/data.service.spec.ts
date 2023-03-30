@@ -15,4 +15,9 @@ describe('DataService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should pull collection', () => {
+    const response = service.policies();
+    expect(response).toBeDefined();
+  });
 });
