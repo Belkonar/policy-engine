@@ -28,12 +28,11 @@ describe('AppController', () => {
 
     const response = await appController.updateDocument({
       key: 'global-admins',
-      namespace: 'd',
-      ordinal: 1,
       policies: [],
     });
 
     expect(response.namespace).toBe('global');
+    expect(response.ordinal).toBe(1);
     expect(response.yaml).toBeNull();
   });
 
