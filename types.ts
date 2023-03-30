@@ -1,8 +1,18 @@
 export type RuleKind = RuleOp | RuleOr | RuleAnd;
 
 export interface PolicyEngineRequest {
-  policies: Policy[];
+  policies?: Policy[];
+  namespace?: string;
+  policy?: string;
   data: unknown;
+}
+
+export interface PolicyDocument {
+  key: string;
+  namespace: string;
+  ordinal: number;
+  policies: Policy[];
+  yaml?: string;
 }
 
 export interface Policy {
@@ -12,7 +22,7 @@ export interface Policy {
 }
 
 export interface RuleOp {
-  op: 'contains' | 'eq';
+  op: 'contains' | 'eq' | 'true';
   src: string;
   value: any;
 }

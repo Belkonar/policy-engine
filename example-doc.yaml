@@ -1,0 +1,18 @@
+permission: '*'
+rules:
+    - op: contains
+      src: $.user.groups
+      value: admin
+---
+permission: basic
+rules:
+  - op: 'true'
+---
+permission: 'policy.*'
+rules:
+  - op: contains
+    src: $.global_roles
+    value: policy-manager
+  - op: contains
+    src: $.permissions
+    value: '*'

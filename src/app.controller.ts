@@ -1,48 +1,55 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { PolicyEngineRequest, RuleKind, RuleOp } from "../types";
-import * as jp from 'jsonpath';
+import { Policy, PolicyDocument, PolicyEngineRequest } from '../types';
+
+import { PolicyService } from './policy/policy.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly policyService: PolicyService,
+  ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Put('document')
+  async updateDocument(@Body() body: PolicyDocument): Promise<PolicyDocument> {
+    const document: PolicyDocument = {
+      ordinal: 1,
+      yaml: null,
+      ...body,
+    };
+
+    document.namespace = document.key.split('-')[0];
+
+    return await this.policyService.updateDocument(document);
   }
 
   @Post()
-  runEngine(@Body() body: PolicyEngineRequest): string[] {
-    const permissions: string[] = [];
+  async runEngine(@Body() body: PolicyEngineRequest): Promise<string[]> {
+    if (body.namespace) {
+      body.policies = await this.policyService.getPoliciesByNamespace(
+        body.namespace,
+      );
 
-    for (const policy of body.policies || []) {
-      for (const rule of policy.rules || []) {
-        if (isOp(rule)) {
-          const input = {
-            permissions,
-            data: body.data,
-          };
-
-          const obj = jp.value(input, rule.src);
-
-          if (rule.op === 'eq' && obj === rule.value) {
-            permissions.push(policy.permission);
-            break;
-          }
-
-          if (rule.op === 'contains' && obj.indexOf(rule.value) !== -1) {
-            permissions.push(policy.permission);
-            break;
-          }
-        }
+      if (body.policies.length == 0) {
+        return ['*'];
       }
     }
 
-    return permissions;
-  }
-}
+    if (body.policy) {
+      const policy = await this.policyService.getPolicyByKey(body.policy);
+      body.policies = [];
 
-function isOp(rule: RuleKind): rule is RuleOp {
-  return (rule as RuleOp).op !== undefined;
+      if (policy) {
+        body.policies.push(policy);
+      }
+    }
+
+    return this.policyService.runEngine(body.data, body.policies);
+  }
+
+  @Get('namespace')
+  async getPoliciesByNamespace(@Query('ns') ns: string): Promise<Policy[]> {
+    return await this.policyService.getPoliciesByNamespace(ns);
+  }
 }

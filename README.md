@@ -1,73 +1,50 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Policy Engine
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+There are currently three modes of operations. Two of which are related.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Dynamic Rules
 
-## Description
+By simply passing in JSON based policies you can execute them with no other requirements.
+You do not need a database, it won't even try to connect to one.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Document Based Rules
 
-## Installation
+The other two modes of operation depend on which field you pass in to the engine. They both
+however deal with policies saved as documents in the database. These can be JSON or YAML.
 
-```bash
-$ npm install
+Using the `policy` field simply loads that specific policy and executes it.
+
+Using the `namespace` field does something much more interesting. It's the primary mode
+of operation for the policy engine.
+
+### Namespace based Rules
+
+Passing in a set of namespaces separated by `.` characters allows you to load
+all the policies for all the namespaces selected and execute them in order.
+Here's an example of a namespace used in `Push`
+
+`global.org.org:57af7f6d-f6f7-4af1-b182-3a30440fa781`
+
+This will then split into three requests for the following namespaces.
+
+```
+global
+org
+org:57af7f6d-f6f7-4af1-b182-3a30440fa781
 ```
 
-## Running the app
+It will return the policies ordered with the ordinal provided (if one was provided).
 
-```bash
-# development
-$ npm run start
+After compiling them it will execute them all in order and return the results.
 
-# watch mode
-$ npm run start:dev
+When you save a document the namespace will be set by splitting the document key
+with `-` and taking the first element. So `global-admins` will be placed under the namespace
+`global`.
 
-# production mode
-$ npm run start:prod
-```
+Given these rules make sure to not use any of these characters (`.-`) in your namespaces.
+You can feel free to use them **after** the namespace as part of the document key.
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+One small addition is that if **zero** policies are returned by the namespace gathering,
+a default permission of `["*"]` will be returned. This effectively makes is so that if
+the database is empty it will give the appropriate permissions to setup the initial RBAC
+rule sets.
