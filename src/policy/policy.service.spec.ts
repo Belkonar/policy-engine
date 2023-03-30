@@ -68,7 +68,7 @@ describe('PolicyService', () => {
   });
 
   it('should get one', async () => {
-    collection.findOne = jest.fn(async () => {}) as any;
+    collection.findOne = jest.fn(async () => ({})) as any;
 
     await service.getOne('key');
   });
