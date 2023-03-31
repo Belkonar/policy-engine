@@ -52,6 +52,25 @@ describe('AppController', () => {
     expect(response.yaml).toBeNull();
   });
 
+  it('should sync', async () => {
+    policyService.updateDocument = jest.fn(async (x) => x);
+
+    const requestData = [
+      {
+        key: 'global-admins',
+        policies: [],
+      },
+      {
+        key: 'org-admins',
+        policies: [],
+      },
+    ];
+
+    await appController.syncDocuments(requestData);
+
+    expect(policyService.updateDocument).toHaveBeenCalledTimes(2);
+  });
+
   it('should get namespaces', async () => {
     policyService.getPoliciesByNamespace = jest.fn(async () => []);
 

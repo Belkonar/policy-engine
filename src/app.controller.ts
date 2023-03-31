@@ -27,6 +27,14 @@ export class AppController {
     return await this.policyService.getOne(key);
   }
 
+  // TODO: Also delete other ones optionally
+  @Put('sync')
+  async syncDocuments(@Body() body: PolicyDocument[]) {
+    for (const doc of body) {
+      await this.updateDocument(doc);
+    }
+  }
+
   @Put('document')
   async updateDocument(@Body() body: PolicyDocument): Promise<PolicyDocument> {
     const document: PolicyDocument = {
